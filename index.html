@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='r' x1='20' y1='80' x2='82' y2='30' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0' stop-color='%2300e5ff'/%3E%3Cstop offset='1' stop-color='%232e6bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='4' width='92' height='92' rx='12' fill='%23101a27'/%3E%3Cpath d='M23.15 69.5 A31 31 0 0 1 76.85 38.5' fill='none' stroke='url(%23r)' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M57 72 L57 52 Q57 43 48 43 L41 43' fill='none' stroke='%23fff' stroke-width='7.5' stroke-linecap='round'/%3E%3Cpath d='M30 43 L42 33.5 L42 52.5 Z' fill='%23fff'/%3E%3C/svg%3E">
+<title>ClusterLink</title>
+<meta name="description" content="ClusterLink lleva la navegación giro a giro del iPhone, la música y el consumo al cuadro de instrumentos digital del Civic X.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=B612:wght@400;700&family=B612+Mono&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: una sola columna centrada; el cuadro de instrumentos animado es el héroe y el resto se lee como la ficha técnica de un tablero de noche. */
+:root {
+  color-scheme: dark;
+  --bg: #05080d;            /* tablero de noche */
+  --panel: #0a1019;         /* superficie elevada */
+  --line: #1a2636;          /* filetes y bordes */
+  --fg: #e4ecf5;            /* texto principal */
+  --dim: #8291a6;           /* texto secundario */
+  --cyan: #00e5ff;          /* aro del icono, inicio */
+  --blue: #2e6bff;          /* aro del icono, final */
+  --cold: #58b4ff;          /* motor frío */
+  --red: #ff4a3d;           /* zona roja */
+  --ok: #4fe3a1;
+  --warn: #ffc15a;
+  --map-bg: #111a26;
+  --map-road: #24324a;
+  --map-block: #172233;
+  --f-display: "Saira Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "B612", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "B612 Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.75rem;
+  --step-3: 2.5rem;
+  --step-4: clamp(3.25rem, 9vw, 6.5rem);
+}
+html { background: var(--bg); }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--cyan); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; line-height: 1.05; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.label {
+  font-family: var(--f-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---------- cabecera ---------- */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-size: var(--step-1); font-weight: 600; letter-spacing: 0.04em; }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.top .label { text-align: right; }
+
+/* ---------- héroe ---------- */
+main { overflow-x: clip; }
+.hero { position: relative; padding-block: 24px 8px; display: grid; gap: 28px; }
+.hero::before {
+  content: ""; position: absolute; inset: 22% -10% auto; height: 70%; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--blue) 22%, transparent), transparent 62%);
+}
+.hero-copy { display: grid; gap: 16px; max-width: 46rem; }
+.hero h1 {
+  font-size: var(--step-4); font-weight: 700; letter-spacing: 0.01em; text-transform: uppercase;
+  background: linear-gradient(100deg, var(--fg) 0 55%, var(--cyan) 75%, var(--blue));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lede { font-size: var(--step-1); line-height: 1.5; color: var(--fg); max-width: 40rem; }
+.lede em { font-style: normal; color: var(--cyan); }
+
+.cluster-box { display: grid; gap: 14px; }
+.cluster { width: 100%; height: auto; max-width: 100%; display: block; }
+.modes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.modes button {
+  font: 600 var(--step-0)/1 var(--f-display); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--dim); background: var(--panel); border: 1px solid var(--line);
+  padding: 10px 16px; border-radius: 999px; cursor: pointer; transition: color .2s, border-color .2s, background .2s;
+}
+.modes button:hover { color: var(--fg); border-color: color-mix(in srgb, var(--cyan) 40%, var(--line)); }
+.modes button[aria-pressed="true"] {
+  color: var(--bg); border-color: transparent;
+  background: linear-gradient(100deg, var(--cyan), var(--blue));
+}
+.modes .beta { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; margin-left: 6px; opacity: .8; }
+.caption { text-align: center; color: var(--dim); font-size: var(--step--1); min-height: 1.6em; }
+
+/* textos del SVG */
+.svg-disp { font-family: var(--f-display); }
+.svg-body { font-family: var(--f-body); }
+.c-fg { fill: var(--fg); }
+.c-dim { fill: var(--dim); }
+.c-cold { fill: var(--cold); }
+.c-red { fill: var(--red); }
+
+/* ---------- secciones ---------- */
+section.block { padding-block: 72px 8px; display: grid; gap: 28px; }
+.block-head { display: grid; gap: 10px; max-width: 44rem; }
+.block-head h2 { font-size: var(--step-3); text-transform: uppercase; letter-spacing: 0.02em; }
+.block-head p { color: var(--dim); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+.steps li { padding: 20px 20px 4px 0; display: grid; gap: 8px; align-content: start; }
+.steps li + li { padding-left: 20px; border-left: 1px solid var(--line); }
+.steps .n { font-family: var(--f-mono); color: var(--cyan); font-size: var(--step--1); letter-spacing: .1em; }
+.steps strong { font-family: var(--f-display); font-weight: 600; font-size: var(--step-2); line-height: 1.1; }
+.steps p { color: var(--dim); }
+
+.features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
+.feature { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 4px 16px; padding-block: 22px; border-top: 1px solid var(--line); }
+.feature svg { width: 44px; height: 44px; grid-row: span 2; }
+.feature h3 { font-size: var(--step-2); text-transform: uppercase; letter-spacing: .02em; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.feature p { color: var(--dim); }
+.feature p b { color: var(--fg); font-weight: 400; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid currentColor; line-height: 1.4;
+}
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.ok { color: var(--ok); }
+.chip.warn { color: var(--warn); }
+.chip.no { color: var(--red); }
+.chip.off { color: var(--dim); }
+.chip.test { color: var(--cyan); }
+
+.factory { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.factory-copy { display: grid; gap: 16px; }
+.factory-copy p { color: var(--dim); max-width: 34rem; }
+.factory-copy p b { color: var(--fg); font-weight: 400; }
+.spec { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); border-top: 1px solid var(--line); }
+.spec dt, .spec dd { margin: 0; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.spec dt { font-family: var(--f-mono); font-size: var(--step--1); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); padding-right: 24px; }
+.spec dd { font-family: var(--f-display); font-size: var(--step-1); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.table-scroll { overflow-x: auto; border-top: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td { text-align: left; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-mono); font-weight: 400; font-size: var(--step--1); letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+td:first-child { font-family: var(--f-display); font-size: var(--step-1); font-weight: 500; }
+td.note { color: var(--dim); }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; border-left: 1px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 28px 28px; display: grid; gap: 6px; }
+.timeline li::before {
+  content: ""; position: absolute; left: -6px; top: 6px; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--dim);
+}
+.timeline li.done::before { border-color: var(--ok); background: var(--ok); }
+.timeline li.now::before { border-color: var(--cyan); box-shadow: 0 0 0 4px color-mix(in srgb, var(--cyan) 20%, transparent); }
+.timeline .when { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.timeline strong { font-family: var(--f-display); font-weight: 600; font-size: var(--step-1); }
+.timeline p { color: var(--dim); max-width: 40rem; }
+
+footer { margin-top: 80px; border-top: 1px solid var(--line); }
+footer .wrap { padding-block: 28px 40px; display: grid; gap: 12px; color: var(--dim); font-size: var(--step--1); }
+footer .brand { color: var(--fg); }
+
+@media (max-width: 760px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .steps li, .steps li + li { padding: 18px 0; border-left: 0; }
+  .steps li + li { border-top: 1px solid var(--line); }
+  .features { grid-template-columns: minmax(0, 1fr); }
+  .factory { grid-template-columns: minmax(0, 1fr); }
+  section.block { padding-block: 56px 0; }
+  .top .label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modes button { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <div class="brand">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <linearGradient id="ic-bg" x1="0" y1="4" x2="0" y2="96" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1a2a3d"/><stop offset="1" stop-color="#080b10"/></linearGradient>
+        <linearGradient id="ic-ring" x1="20" y1="80" x2="82" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#00e5ff"/><stop offset="1" stop-color="#2e6bff"/></linearGradient>
+      </defs>
+      <rect x="4" y="4" width="92" height="92" rx="12" fill="url(#ic-bg)" stroke="#ffffff" stroke-opacity=".11" stroke-width="1.2"/>
+      <path d="M23.15 69.5 A31 31 0 1 1 76.85 69.5" fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="7" stroke-linecap="round"/>
+      <path d="M23.15 69.5 A31 31 0 0 1 76.85 38.5" fill="none" stroke="url(#ic-ring)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M57 72 L57 52 Q57 43 48 43 L41 43" fill="none" stroke="#ffffff" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30 43 L42 33.5 L42 52.5 Z" fill="#ffffff" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+    </svg>
+    ClusterLink
+  </div>
+  <span class="label">Civic X · cuadro digital</span>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div class="hero-copy">
+      <span class="label">La ruta, frente al volante</span>
+      <h1>ClusterLink</h1>
+      <p class="lede">Lleva la navegación del iPhone al cuadro de instrumentos del Civic: <em>flecha, calle y metros al próximo giro</em>, con la música y el consumo al lado, en la letra de fábrica.</p>
+    </div>
+
+    <div class="cluster-box">
+      <svg class="cluster" id="cluster" viewBox="0 0 1000 600" role="img" aria-labelledby="cl-title">
+        <title id="cl-title">Simulación del cuadro de instrumentos con ClusterLink: tacómetro, velocidad y, en el centro, la maniobra, la música y el consumo.</title>
+        <defs>
+          <linearGradient id="ring" x1="230" y1="540" x2="780" y2="90" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="var(--cyan)"/><stop offset="1" stop-color="var(--blue)"/>
+          </linearGradient>
+          <radialGradient id="face" cx="500" cy="370" r="330" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0b1422"/><stop offset=".85" stop-color="#060a11"/><stop offset="1" stop-color="#05080d"/>
+          </radialGradient>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>
+          <clipPath id="win"><rect x="276" y="262" width="448" height="196" rx="10"/></clipPath>
+        </defs>
+
+        <!-- visera y esfera -->
+        <path d="M70 128 Q500 -12 930 128" fill="none" stroke="var(--line)" stroke-width="3"/>
+        <circle cx="500" cy="370" r="322" fill="url(#face)"/>
+
+        <!-- aro del tacómetro -->
+        <path id="ringTrack" d="M240.19 520 A300 300 0 1 1 759.81 520" fill="none" stroke="#ffffff" stroke-opacity=".07" stroke-width="16"/>
+        <path id="ringGlow" d="M240.19 520 A300 300 0 1 1 759.81 520" fill="none" stroke="url(#ring)" stroke-width="22" stroke-dasharray="1256.64" stroke-dashoffset="1000" opacity=".55" filter="url(#glow)"/>
+        <path id="ringLive" d="M240.19 520 A300 300 0 1 1 759.81 520" fill="none" stroke="url(#ring)" stroke-width="14" stroke-dasharray="1256.64" stroke-dashoffset="1000"/>
+        <g id="ticks"></g>
+        <text x="500" y="146" text-anchor="middle" class="svg-body c-dim" font-size="14">x1000 r/min</text>
+
+        <!-- velocidad -->
+        <text x="500" y="232" text-anchor="middle" class="svg-disp c-fg"><tspan id="spd" font-size="104" font-weight="700">0</tspan><tspan font-size="24" dx="8" class="c-dim">km/h</tspan></text>
+
+        <!-- modo: ruta + música -->
+        <g id="m-route" class="svg-disp">
+          <g id="arrow1" transform="translate(284 270)"></g>
+          <text x="360" y="312" class="c-fg"><tspan id="dist1" font-size="52" font-weight="600">420</tspan><tspan id="dunit1" font-size="22" dx="6" class="c-dim">m</tspan></text>
+          <text id="street1" x="360" y="342" font-size="23" font-weight="500" class="c-fg">Av. Abraham Lincoln</text>
+          <text id="eta1" x="360" y="366" font-size="19" class="c-dim">14 min · 6.4 km</text>
+          <path d="M290 378 v16 a4 4 0 1 1 -2 -3.4 v-12.6 l10 -2 v3 z" class="c-fg" opacity=".8"/>
+          <text id="song1" x="306" y="394" font-size="21" font-weight="500" class="c-fg">Burbujas de amor</text>
+          <text id="artist1" x="306" y="416" font-size="17" class="c-dim">Juan Luis Guerra</text>
+          <g font-size="18">
+            <text x="594" y="296" class="c-dim">Range</text>
+            <text x="594" y="330" class="c-dim">Average</text>
+            <text x="594" y="364" class="c-dim">Trip A</text>
+          </g>
+          <g text-anchor="end" class="svg-disp c-fg">
+            <text x="730" y="298"><tspan id="range1" font-size="26" font-weight="600">186</tspan><tspan font-size="14" dx="4" class="c-dim">km</tspan></text>
+            <text x="730" y="332"><tspan id="avg1" font-size="26" font-weight="600">15.4</tspan><tspan font-size="14" dx="4" class="c-dim">km/gal</tspan></text>
+            <text x="730" y="366"><tspan id="tripa1" font-size="26" font-weight="600">4086.4</tspan><tspan font-size="14" dx="4" class="c-dim">km</tspan></text>
+          </g>
+        </g>
+
+        <!-- modo: música -->
+        <g id="m-music" class="svg-body" display="none">
+          <path d="M304 290 v22 a5.5 5.5 0 1 1 -2.6 -4.6 v-17.4 l14 -3 v4 z" class="c-fg" opacity=".8"/>
+          <text id="song2" x="300" y="350" font-size="30" class="svg-disp c-fg" font-weight="600">Burbujas de amor</text>
+          <text id="artist2" x="300" y="380" font-size="17" class="c-dim">Juan Luis Guerra</text>
+          <g font-size="18">
+            <text x="594" y="296" class="c-dim">Range</text>
+            <text x="594" y="330" class="c-dim">Average</text>
+            <text x="594" y="364" class="c-dim">Trip A</text>
+          </g>
+          <g text-anchor="end" class="svg-disp c-fg">
+            <text x="730" y="298"><tspan id="range2" font-size="26" font-weight="600">186</tspan><tspan font-size="14" dx="4" class="c-dim">km</tspan></text>
+            <text x="730" y="332"><tspan id="avg2" font-size="26" font-weight="600">15.4</tspan><tspan font-size="14" dx="4" class="c-dim">km/gal</tspan></text>
+            <text x="730" y="366"><tspan id="tripa2" font-size="26" font-weight="600">4086.4</tspan><tspan font-size="14" dx="4" class="c-dim">km</tspan></text>
+          </g>
+        </g>
+
+        <!-- modo: solo datos (panel grande, centrado en el eje) -->
+        <g id="m-data" class="svg-body" display="none">
+          <g font-size="20">
+            <text x="352" y="306" class="c-dim">Range</text>
+            <text x="352" y="352" class="c-dim">Average</text>
+            <text x="352" y="398" class="c-dim">Trip A</text>
+          </g>
+          <g text-anchor="end" class="svg-disp c-fg">
+            <text x="650" y="308"><tspan id="range3" font-size="38" font-weight="600">186</tspan><tspan font-size="17" dx="5" class="c-dim">km</tspan></text>
+            <text x="650" y="354"><tspan id="avg3" font-size="38" font-weight="600">15.4</tspan><tspan font-size="17" dx="5" class="c-dim">km/gal</tspan></text>
+            <text x="650" y="400"><tspan id="tripa3" font-size="38" font-weight="600">4086.4</tspan><tspan font-size="17" dx="5" class="c-dim">km</tspan></text>
+          </g>
+        </g>
+
+        <!-- modo: mapa en el cuadro -->
+        <g id="m-map" display="none" clip-path="url(#win)">
+          <rect x="276" y="262" width="448" height="196" fill="var(--map-bg)"/>
+          <g id="mapGrid">
+            <g fill="var(--map-block)">
+              <rect x="300" y="190" width="120" height="60" rx="4"/><rect x="580" y="190" width="130" height="60" rx="4"/>
+              <rect x="300" y="270" width="120" height="60" rx="4"/><rect x="580" y="270" width="130" height="60" rx="4"/>
+              <rect x="300" y="350" width="120" height="60" rx="4"/><rect x="580" y="350" width="130" height="60" rx="4"/>
+              <rect x="300" y="430" width="120" height="60" rx="4"/><rect x="580" y="430" width="130" height="60" rx="4"/>
+            </g>
+            <g stroke="var(--map-road)" stroke-width="12">
+              <path d="M270 180 H730 M270 260 H730 M270 340 H730 M270 420 H730 M270 500 H730"/>
+            </g>
+          </g>
+          <path d="M440 470 V250 M560 470 V250" stroke="var(--map-road)" stroke-width="12"/>
+          <path d="M500 470 V328 Q500 300 472 300 H260" fill="none" stroke="url(#ring)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M500 410 l-13 26 l13 -7 l13 7 z" fill="#ffffff"/>
+          <rect x="288" y="274" width="150" height="62" rx="8" fill="#0a7a5a"/>
+          <g id="arrow2" transform="translate(296 284) scale(.66)"></g>
+          <text x="342" y="304" class="svg-disp" fill="#ffffff"><tspan id="dist2" font-size="28" font-weight="600">420</tspan><tspan id="dunit2" font-size="15" dx="4">m</tspan></text>
+          <text id="street2" x="342" y="326" font-size="13" class="svg-body" fill="#ffffff" opacity=".9">Av. Abraham Lincoln</text>
+          <text x="712" y="448" text-anchor="end" font-size="12" class="svg-body c-dim">mapa dibujado por el iPhone</text>
+        </g>
+
+        <!-- línea inferior: motor y viaje -->
+        <g id="bottomLine" class="svg-body" font-size="16">
+          <path d="M452 439 v-12 a4 4 0 0 1 8 0 v12 a7 7 0 1 1 -8 0 z" fill="none" stroke-width="2" id="thermo" stroke="var(--cold)"/>
+          <text x="470" y="448"><tspan id="temp" class="c-cold" font-weight="700">52</tspan><tspan class="c-dim" font-size="12" dx="3">°C</tspan></text>
+          <text x="560" y="448" class="c-dim">Viaje <tspan id="trip" class="c-fg" font-weight="700">0.0</tspan> km</text>
+        </g>
+
+        <!-- barra inferior del cuadro -->
+        <g class="svg-disp" text-anchor="middle">
+          <text x="330" y="566" font-size="30" class="c-fg">28<tspan font-size="16" class="c-dim" dx="3">°C</tspan></text>
+          <text x="500" y="566" font-size="30" class="c-fg"><tspan font-size="18" class="c-dim">ODO </tspan><tspan id="odo">48 213</tspan><tspan font-size="16" class="c-dim" dx="4">km</tspan></text>
+          <text id="clock" x="680" y="568" font-size="40" font-weight="600" class="c-fg">7:42</text>
+        </g>
+      </svg>
+
+      <div class="modes" role="group" aria-label="Modo del cuadro">
+        <button type="button" id="b-route" data-mode="route" aria-pressed="true">Ruta y música</button>
+        <button type="button" id="b-music" data-mode="music" aria-pressed="false">Solo música</button>
+        <button type="button" id="b-data" data-mode="data" aria-pressed="false">Solo datos</button>
+        <button type="button" id="b-map" data-mode="map" aria-pressed="false">Mapa<span class="beta">en pruebas</span></button>
+      </div>
+      <p class="caption" id="caption" aria-live="polite">Con una ruta activa: la maniobra a la izquierda, el consumo a la derecha.</p>
+    </div>
+  </div>
+
+  <section class="wrap block" aria-labelledby="h-why">
+    <div class="block-head">
+      <span class="label">Por qué existe</span>
+      <h2 id="h-why">El mapa se iba justo en el giro</h2>
+      <p>El Civic tiene un cuadro digital, pero la navegación del iPhone no podía escribir en él. Así se veía doblar a la derecha antes:</p>
+    </div>
+    <ol class="steps">
+      <li><span class="n">1</span><strong>Pones la direccional derecha</strong><p>Faltan 80 metros para la calle donde doblas.</p></li>
+      <li><span class="n">2</span><strong>La cámara lateral tapa el mapa</strong><p>La pantalla central cambia a la cámara hasta que termina el giro. La ruta desaparece.</p></li>
+      <li><span class="n">3</span><strong>Con ClusterLink, el cuadro sigue ahí</strong><p>Flecha, calle y distancia quedan frente al volante, sin depender de la pantalla central.</p></li>
+    </ol>
+  </section>
+
+  <section class="wrap block" aria-labelledby="h-what">
+    <div class="block-head">
+      <span class="label">Qué muestra</span>
+      <h2 id="h-what">Lo que necesitas mientras manejas</h2>
+    </div>
+    <div class="features">
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M27 38 V20 Q27 13 20 13 H16" fill="none" stroke="var(--cyan)" stroke-width="4" stroke-linecap="round"/><path d="M7 13 L17 5 V21 Z" fill="var(--cyan)"/></svg>
+        <h3>Giro a giro</h3>
+        <p>Flecha de la maniobra, nombre de la calle y <b>distancia que baja en vivo</b>, más los minutos y kilómetros que faltan al destino.</p>
+      </article>
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M16 9 V30 a6 6 0 1 1 -3 -5.2 V12 L34 7 V26 a6 6 0 1 1 -3 -5.2 V11.5 Z" fill="none" stroke="var(--cyan)" stroke-width="2.6" stroke-linejoin="round"/></svg>
+        <h3>Música</h3>
+        <p>Título y artista de lo que suena. Sin ruta se ve en grande; con ruta, compacta debajo de la maniobra.</p>
+      </article>
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M6 34 A17 17 0 1 1 38 34" fill="none" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/><path d="M6 34 A17 17 0 0 1 30 10" fill="none" stroke="var(--cyan)" stroke-width="4" stroke-linecap="round"/><path d="M22 30 L30 18" stroke="var(--fg)" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <h3>Consumo</h3>
+        <p>Autonomía en km, <b>promedio en km/galón</b> y Trip A. Abajo, la temperatura del motor, en azul mientras está frío, y los km del viaje.</p>
+      </article>
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="5" y="9" width="34" height="26" rx="4" fill="none" stroke="var(--cyan)" stroke-width="2.6"/><path d="M5 25 L16 18 L25 24 L39 15" fill="none" stroke="var(--fg)" stroke-width="2.6" stroke-linejoin="round"/></svg>
+        <h3>Mapa en el cuadro <span class="chip test">En pruebas</span></h3>
+        <p>El mapa que dibuja el iPhone, ocupando toda la ventana del cuadro, con la tarjeta de la maniobra visible.</p>
+      </article>
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><rect x="5" y="8" width="34" height="24" rx="3" fill="none" stroke="var(--cyan)" stroke-width="2.6"/><path d="M15 38 H29 M22 32 V38" stroke="var(--cyan)" stroke-width="2.6" stroke-linecap="round"/><circle cx="15" cy="20" r="3" fill="var(--fg)"/><path d="M22 17 H32 M22 23 H29" stroke="var(--fg)" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <h3>Ajustes en el radio <span class="chip test">En pruebas</span></h3>
+        <p>Una app en la pantalla central para elegir el modo del cuadro y el tamaño del mapa.</p>
+      </article>
+      <article class="feature">
+        <svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="16" fill="none" stroke="var(--cyan)" stroke-width="2.6"/><path d="M22 13 V22 L28 26" fill="none" stroke="var(--fg)" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <h3>Siempre listo</h3>
+        <p>Conectas el iPhone y el cuadro empieza a mostrar la ruta. Al desconectarlo, vuelve a su vista normal.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="h-factory">
+    <div class="factory">
+      <div class="factory-copy">
+        <span class="label">Diseño</span>
+        <h2 id="h-factory" style="font-size: var(--step-3); text-transform: uppercase;">Como si viniera de fábrica</h2>
+        <p>Todo se dibuja con <b>la fuente original del cuadro</b> y respeta su encuadre, para que nada se vea añadido.</p>
+        <p>Si no hay ruta ni música, el panel de consumo crece y queda <b>centrado en el eje del tacómetro</b>. Los datos que sobraban, como el consumo en L/100 km o la brújula, dejaron su lugar a los que sí se usan.</p>
+      </div>
+      <dl class="spec">
+        <dt>Carro</dt><dd>Civic X, 2018</dd>
+        <dt>Pantalla</dt><dd>Cuadro digital, ventana central</dd>
+        <dt>Distancia</dt><dd>Metros, actualizados en vivo</dd>
+        <dt>Promedio</dt><dd>km/galón</dd>
+        <dt>Motor frío</dt><dd>Temperatura en azul</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="h-compat">
+    <div class="block-head">
+      <span class="label">Compatibilidad</span>
+      <h2 id="h-compat">Dónde funciona hoy</h2>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Con</th><th scope="col">Estado</th><th scope="col">Detalle</th></tr></thead>
+        <tbody>
+          <tr><td>Civic 2018 EX-T</td><td><span class="chip ok">Uso diario</span></td><td class="note">Radio Display Audio original, firmware 1.F1A2.34.</td></tr>
+          <tr><td>Google Maps</td><td><span class="chip ok">Completo</span></td><td class="note">Todas las maniobras, calle y distancia.</td></tr>
+          <tr><td>Apple Maps</td><td><span class="chip warn">Funciona</span></td><td class="note">La guía empieza cuando el carro se mueve.</td></tr>
+          <tr><td>Waze</td><td><span class="chip no">Sin maniobras</span></td><td class="note">No envía la guía giro a giro al carro. Se podrá ver en el modo mapa.</td></tr>
+          <tr><td>Otros Honda de la misma plataforma</td><td><span class="chip off">Sin probar</span></td><td class="note">CR-V de 5.ª generación, Insight y similares.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="h-road">
+    <div class="block-head">
+      <span class="label">Estado</span>
+      <h2 id="h-road">Hoja de ruta</h2>
+    </div>
+    <ol class="timeline">
+      <li class="done">
+        <div class="when"><span class="label">1 nov 2026</span><span class="chip ok">Listo</span></div>
+        <strong>Navegación, música y consumo</strong>
+        <p>Validados en el carro y en uso todos los días.</p>
+      </li>
+      <li class="now">
+        <div class="when"><span class="label">Noviembre 2026</span><span class="chip test">En pruebas</span></div>
+        <strong>Mapa en el cuadro y app de ajustes</strong>
+        <p>Probando qué tamaños de mapa se leen mejor en la ventana del cuadro, para ofrecer solo los que funcionan.</p>
+      </li>
+      <li>
+        <div class="when"><span class="label">Después</span></div>
+        <strong>Carátula del álbum, salud del motor y bitácora de consumo</strong>
+        <p>Avisos para viajes cortos en frío y ralentí largo, y un registro del consumo por viaje.</p>
+      </li>
+      <li>
+        <div class="when"><span class="label">Más adelante</span></div>
+        <strong>Otros Honda</strong>
+        <p>Llevarlo a los modelos que usan el mismo radio.</p>
+      </li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">ClusterLink</div>
+    <p>Proyecto personal de Bryan Cabrera. © 2026, todos los derechos reservados.</p>
+    <p>iPhone y CarPlay son marcas de Apple Inc.; Honda y Civic, de Honda Motor Co. Se mencionan solo para indicar compatibilidad. ClusterLink no está afiliado a ninguna de las dos ni cuenta con su respaldo.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const CX = 500, CY = 370, R = 300, L = 1256.64;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // marcas del tacómetro: 0–8 (x1000 r/min) sobre 240°, como el aro del icono
+  const ticks = $("ticks");
+  const pt = (deg, r) => [CX + r * Math.cos(deg * Math.PI / 180), CY - r * Math.sin(deg * Math.PI / 180)];
+  for (let i = 0; i <= 32; i++) {
+    const v = i / 4, deg = 210 - 30 * v, major = i % 4 === 0;
+    const [x1, y1] = pt(deg, 314), [x2, y2] = pt(deg, major ? 338 : 326);
+    const ln = document.createElementNS(NS, "line");
+    ln.setAttribute("x1", x1.toFixed(1)); ln.setAttribute("y1", y1.toFixed(1));
+    ln.setAttribute("x2", x2.toFixed(1)); ln.setAttribute("y2", y2.toFixed(1));
+    ln.setAttribute("stroke", v >= 6.5 ? "var(--red)" : "var(--fg)");
+    ln.setAttribute("stroke-opacity", major ? "0.9" : "0.45");
+    ln.setAttribute("stroke-width", major ? "4" : "2");
+    ticks.appendChild(ln);
+    if (major) {
+      const [tx, ty] = pt(deg, 262);
+      const t = document.createElementNS(NS, "text");
+      t.setAttribute("x", tx.toFixed(1)); t.setAttribute("y", (ty + 11).toFixed(1));
+      t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", "32");
+      t.setAttribute("class", "svg-disp " + (v >= 7 ? "c-red" : "c-fg"));
+      t.textContent = v;
+      ticks.appendChild(t);
+    }
+  }
+
+  // flechas de maniobra en una caja de 64×64
+  const ARROWS = {
+    left: '<path d="M40 60 V34 Q40 22 28 22 H24" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 22 L25 8 V36 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>',
+    right: '<g transform="translate(64 0) scale(-1 1)"><path d="M40 60 V34 Q40 22 28 22 H24" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 22 L25 8 V36 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></g>',
+    straight: '<path d="M32 60 V24" stroke="#fff" stroke-width="8" stroke-linecap="round"/><path d="M32 6 L47 25 H17 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>',
+    round: '<circle cx="30" cy="30" r="12" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="6"/><path d="M30 62 V42 A12 12 0 0 1 39 21 L44 16" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M56 4 L54 24 L36 6 Z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>'
+  };
+  const ROUTE = [
+    { dir: "left", street: "Av. Abraham Lincoln", d: 420 },
+    { dir: "right", street: "C/ Gustavo Mejía Ricart", d: 640 },
+    { dir: "straight", street: "Av. 27 de Febrero", d: 1350 },
+    { dir: "round", street: "Rotonda, 2.ª salida", d: 380 },
+    { dir: "right", street: "Av. Winston Churchill", d: 900 },
+    { dir: "left", street: "C/ Rafael A. Sánchez", d: 520 }
+  ];
+  const SONGS = [
+    ["Burbujas de amor", "Juan Luis Guerra"],
+    ["Ojalá que llueva café", "Juan Luis Guerra"],
+    ["La bilirrubina", "Juan Luis Guerra"]
+  ];
+  const CAPTIONS = {
+    route: "Con una ruta activa: la maniobra a la izquierda, el consumo a la derecha.",
+    music: "Sin ruta, la canción se ve en grande.",
+    data: "Sin ruta ni música, el panel de consumo crece y se centra en el eje del tacómetro.",
+    map: "El mapa del iPhone usa toda la ventana del cuadro. En pruebas."
+  };
+
+  const s = { mi: 0, d: ROUTE[0].d, left: 6.4, spd: 0, rpm: 0.8, temp: 52, trip: 0, tripA: 4086.4, range: 186, t: 0, song: 0 };
+  let mode = "route";
+
+  function setArrow(dir) { $("arrow1").innerHTML = ARROWS[dir]; $("arrow2").innerHTML = ARROWS[dir]; }
+  function fmtDist(m) { return m >= 1000 ? [(m / 1000).toFixed(1), "km"] : [String(Math.max(0, Math.round(m / 10) * 10)), "m"]; }
+  function setText(id, v) { const e = $(id); if (e.textContent !== v) e.textContent = v; }
+
+  function render() {
+    setText("spd", String(Math.round(s.spd)));
+    const off = (L * (1 - s.rpm / 8)).toFixed(1);
+    $("ringLive").setAttribute("stroke-dashoffset", off);
+    $("ringGlow").setAttribute("stroke-dashoffset", off);
+    const [dv, du] = fmtDist(s.d);
+    setText("dist1", dv); setText("dunit1", du); setText("dist2", dv); setText("dunit2", du);
+    const m = ROUTE[s.mi];
+    setText("street1", m.street); setText("street2", m.street);
+    const mins = Math.max(1, Math.round(s.left / 28 * 60));
+    setText("eta1", mins + " min · " + s.left.toFixed(1) + " km");
+    const [song, artist] = SONGS[s.song];
+    setText("song1", song); setText("artist1", artist); setText("song2", song); setText("artist2", artist);
+    for (const k of ["1", "2", "3"]) {
+      setText("range" + k, String(Math.round(s.range)));
+      setText("avg" + k, "15.4");
+      setText("tripa" + k, s.tripA.toFixed(1));
+    }
+    const cold = s.temp < 70;
+    setText("temp", String(Math.round(s.temp)));
+    $("temp").setAttribute("class", cold ? "c-cold" : "c-fg");
+    $("thermo").setAttribute("stroke", cold ? "var(--cold)" : "var(--fg)");
+    setText("trip", s.trip.toFixed(1));
+    const now = new Date();
+    $("clock").textContent = (now.getHours() % 12 || 12) + ":" + String(now.getMinutes()).padStart(2, "0");
+    $("mapGrid").setAttribute("transform", "translate(0 " + ((s.t * s.spd * 0.9) % 80).toFixed(1) + ")");
+  }
+
+  function step(dt) {
+    s.t += dt;
+    const target = s.d > 160 ? 46 : 18;
+    s.spd += (target - s.spd) * Math.min(1, dt * 0.7);
+    const g = s.spd % 22;
+    s.rpm += ((0.85 + (g / 22) * 1.7 + s.spd / 60) - s.rpm) * Math.min(1, dt * 3);
+    const meters = s.spd / 3.6 * dt * 4;   // demo a 4×
+    s.d -= meters;
+    s.left = Math.max(0.1, s.left - meters / 1000);
+    s.trip += meters / 1000; s.tripA += meters / 1000; s.range -= meters / 1000 / 2.2;
+    if (s.temp < 88) s.temp = Math.min(88, s.temp + dt * 1.1);
+    if (s.d <= 0) {
+      s.mi = (s.mi + 1) % ROUTE.length;
+      s.d = ROUTE[s.mi].d;
+      if (s.mi === 0) { s.left = 6.4; s.range = 186; }
+      setArrow(ROUTE[s.mi].dir);
+    }
+    s.song = Math.floor(s.t / 24) % SONGS.length;
+  }
+
+  function setMode(m) {
+    mode = m;
+    $("m-route").setAttribute("display", m === "route" ? "inline" : "none");
+    $("m-music").setAttribute("display", m === "music" ? "inline" : "none");
+    $("m-data").setAttribute("display", m === "data" ? "inline" : "none");
+    $("m-map").setAttribute("display", m === "map" ? "inline" : "none");
+    $("bottomLine").setAttribute("display", m === "map" ? "none" : "inline");
+    document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+    $("caption").textContent = CAPTIONS[m];
+  }
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+  setArrow(ROUTE[0].dir);
+  if (reduce) {
+    s.spd = 38; s.rpm = 1.9; s.d = 350; s.temp = 64; s.trip = 2.1; render();
+    return;
+  }
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.max(0, Math.min(0.1, (now - last) / 1000)); last = now;
+    step(dt); render();
+    requestAnimationFrame(frame);
+  }
+  render();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
